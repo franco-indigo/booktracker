@@ -6,6 +6,20 @@ const bookTitle = document.getElementById("book-title");
 const bookReview = document.getElementById("book-review");
 const starRating = document.getElementById("star-rating");
 const bookList = document.getElementById("book-list");
+const usernamePrompt = document.getElementById("username-prompt");
+const startBtn = document.getElementById("start-btn");
+const usernameInput = document.getElementById("username-input");
+const bookApp = document.getElementById("booktracker-app");
+
+startBtn.addEventListener("click", () => {
+  const name = usernameInput.value.trim();
+  if (name) {
+    usernamePrompt.classList.add("hidden");
+    bookApp.classList.remove("hidden");
+  } else {
+    alert("Please enter your name.");
+  }
+});
 
 let selectedRating = 0;
 
