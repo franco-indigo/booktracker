@@ -1,45 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Book Tracker</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bookworm Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h2 id="user-name">Welcome!</h2>
-    <div class="book-box">
-      <h3>Books I finished reading:</h3>
-      <div id="book-list"></div>
-      <button id="add-book-btn">Add Book</button>
-    </div>
-  </div>
-
-  <!-- Username Prompt -->
-  <div class="username-prompt" id="username-prompt">
-    <h2>Enter your name to begin:</h2>
-    <input type="text" id="username-input" placeholder="Your name..." />
+  <!-- Username prompt (shown initially) -->
+  <div id="username-prompt" class="username-prompt container">
+    <h1 class="welcome-title">Welcome to Bookworm Tracker</h1>
+    <input type="text" id="username-input" placeholder="Enter your username" />
     <button id="start-btn">Start</button>
+    <p id="error-message" class="error-msg hidden"></p>
   </div>
 
-  <!-- Book Tracker App -->
+  <!-- Main app container (hidden initially) -->
   <div id="booktracker-app" class="container hidden">
-    <h1 class="center">Books I Finished Reading:</h1>
+    <h1 id="user-name" class="username-title"></h1>
+    <h2 class="section-heading">Books I Finished Reading:</h2>
     <div id="book-list" class="book-list"></div>
     <button id="add-book-btn" class="center-btn">Add Book</button>
   </div>
-  
-  <!-- Modal for adding book -->
-  <div class="modal hidden" id="book-modal">
+
+  <!-- Modal to add book -->
+  <div id="book-modal" class="modal hidden">
     <div class="modal-content">
-      <input type="text" id="book-title" placeholder="Book Title">
-      <div class="stars" id="star-rating">
-        ★★★★★
-      </div>
-      <textarea id="book-review" placeholder="Write your review here..."></textarea>
+      <h3>Add a New Book</h3>
+      <input type="text" id="book-title" placeholder="Book title" />
+      <div id="star-rating" class="stars"></div>
+      <textarea id="book-review" rows="4" placeholder="Write your review..."></textarea>
       <div class="modal-buttons">
         <button id="reset-btn">Reset</button>
-        <button id="submit-btn" disabled>Add</button>
+        <button id="submit-btn" disabled>Submit</button>
       </div>
     </div>
   </div>
