@@ -12,19 +12,23 @@ const starRating = document.getElementById("star-rating");
 const bookReviewInput = document.getElementById("book-review");
 const resetBtn = document.getElementById("reset-btn");
 const submitBtn = document.getElementById("submit-btn");
-const errorMessage = document.getElementById("error-message");
 
 let currentUser = null;
 let selectedRating = 0;
 
-// Username validation & start app
+// Hide main app & modal at the beginning
+window.addEventListener("DOMContentLoaded", () => {
+  booktrackerApp.classList.add("hidden");
+  bookModal.classList.add("hidden");
+});
+
+// Username validation
 startBtn.addEventListener("click", () => {
   const username = usernameInput.value.trim();
   if (!username) {
     showError("You need to input a username");
     return;
   }
-  clearError();
   currentUser = username;
   usernamePrompt.classList.add("hidden");
   booktrackerApp.classList.remove("hidden");
@@ -32,19 +36,18 @@ startBtn.addEventListener("click", () => {
   loadBooks();
 });
 
-// Show error message
 function showError(message) {
-  errorMessage.textContent = message;
-  errorMessage.classList.remove("hidden");
+  let error = document.querySelector(".error-message");
+  if (!error) {
+    error = document.createElement("p");
+    error.className = "error-message";
+    error.style.color = "red";
+    usernamePrompt.appendChild(error);
+  }
+  error.textContent = message;
 }
 
-// Clear error message
-function clearError() {
-  errorMessage.textContent = "";
-  errorMessage.classList.add("hidden");
-}
-
-// Show modal to add book
+// Show modal
 addBookBtn.addEventListener("click", () => {
   bookModal.classList.remove("hidden");
   resetForm();
@@ -55,7 +58,7 @@ function generateStars() {
   starRating.innerHTML = "";
   for (let i = 1; i <= 5; i++) {
     const star = document.createElement("span");
-    star.textContent = "★";
+    star.innerHTML = "★";
     star.dataset.index = i;
     star.style.cursor = "pointer";
     star.addEventListener("click", () => {
@@ -70,11 +73,7 @@ function generateStars() {
 function updateStars() {
   const stars = starRating.querySelectorAll("span");
   stars.forEach((star, index) => {
-    if (index < selectedRating) {
-      star.classList.add("filled");
-    } else {
-      star.classList.remove("filled");
-    }
+    star.style.color = index < selectedRating ? "gold" : "gray";
   });
 }
 
@@ -85,10 +84,10 @@ function resetForm() {
   bookReviewInput.value = "";
   selectedRating = 0;
   updateStars();
-  submitBtn.disabled = true;
+  checkSubmitReady();
 }
 
-// Enable submit button only when inputs are valid
+// Input listeners
 [bookTitleInput, bookReviewInput].forEach(input => {
   input.addEventListener("input", checkSubmitReady);
 });
@@ -101,10 +100,17 @@ function checkSubmitReady() {
   );
 }
 
+// Reset form
 resetBtn.addEventListener("click", resetForm);
 
-// Submit new book review
+// Submit book
 submitBtn.addEventListener("click", () => {
+  if (
+    !bookTitleInput.value.trim() ||
+    !bookReviewInput.value.trim() ||
+    selectedRating === 0
+  ) return;
+
   const title = bookTitleInput.value.trim();
   const review = bookReviewInput.value.trim();
   const newReview = { title, rating: selectedRating, review };
@@ -113,7 +119,7 @@ submitBtn.addEventListener("click", () => {
   bookModal.classList.add("hidden");
 });
 
-// Save book to localStorage
+// Save to localStorage
 function saveBook(book) {
   const key = `bookworm-${currentUser}-books`;
   const saved = JSON.parse(localStorage.getItem(key)) || [];
@@ -121,39 +127,24 @@ function saveBook(book) {
   localStorage.setItem(key, JSON.stringify(saved));
 }
 
-// Load books from localStorage
+// Load from localStorage
 function loadBooks() {
-  bookList.innerHTML = "";
   const key = `bookworm-${currentUser}-books`;
-  const savedBooks = JSON.parse(localStorage.getItem(key)) || [];
-  savedBooks.forEach(displayBook);
+  const saved = JSON.parse(localStorage.getItem(key)) || [];
+  bookList.innerHTML = "";
+  saved.forEach(displayBook);
 }
 
-// Display a single book entry
+// Display book
 function displayBook(book) {
-  const bookEntry = document.createElement("div");
-  bookEntry.classList.add("book-entry");
-
-  // Title bold
-  const titleEl = document.createElement("h3");
-  titleEl.textContent = book.title;
-  bookEntry.appendChild(titleEl);
-
-  // Stars
-  const starsEl = document.createElement("div");
-  for (let i = 1; i <= 5; i++) {
-    const star = document.createElement("span");
-    star.textContent = "★";
-    star.style.color = i <= book.rating ? "gold" : "lightgray";
-    starsEl.appendChild(star);
-  }
-  bookEntry.appendChild(starsEl);
-
-  // Review text
-  const reviewEl = document.createElement("p");
-  reviewEl.textContent = book.review;
-  bookEntry.appendChild(reviewEl);
-
-  bookList.appendChild(bookEntry);
+  const item = document.createElement("div");
+  item.className = "book-entry";
+  item.innerHTML = `
+    <h4>${book.title}</h4>
+    <p>${"★".repeat(book.rating)}${"☆".repeat(5 - book.rating)}</p>
+    <p>${book.review}</p>
+    <hr/>
+  `;
+  bookList.appendChild(item);
 }
 
