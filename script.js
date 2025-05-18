@@ -1,94 +1,144 @@
-const addBookBtn = document.getElementById("add-book-btn");
-const bookModal = document.getElementById("book-modal");
-const submitBtn = document.getElementById("submit-btn");
-const resetBtn = document.getElementById("reset-btn");
-const bookTitle = document.getElementById("book-title");
-const bookReview = document.getElementById("book-review");
-const starRating = document.getElementById("star-rating");
-const bookList = document.getElementById("book-list");
-const usernamePrompt = document.getElementById("username-prompt");
+// DOM Elements
 const startBtn = document.getElementById("start-btn");
 const usernameInput = document.getElementById("username-input");
-const bookApp = document.getElementById("booktracker-app");
+const usernamePrompt = document.getElementById("username-prompt");
+const appContainer = document.getElementById("booktracker-app");
+const userNameTitle = document.getElementById("user-name");
+const usernameError = document.getElementById("username-error");
 
-startBtn.addEventListener("click", () => {
-  const name = usernameInput.value.trim();
-  if (name) {
+const addBookBtn = document.getElementById("add-book-btn");
+const bookModal = document.getElementById("book-modal");
+const bookTitleInput = document.getElementById("book-title");
+const bookReviewInput = document.getElementById("book-review");
+const starRating = document.getElementById("star-rating");
+const resetBtn = document.getElementById("reset-btn");
+const submitBtn = document.getElementById("submit-btn");
+const bookList = document.getElementById("book-list");
+
+let currentUser = "";
+let currentRating = 0;
+
+// Load saved username on page load
+window.onload = function () {
+  const savedUsername = localStorage.getItem("bookworm-username");
+  if (savedUsername) {
+    currentUser = savedUsername;
+    userNameTitle.textContent = `Welcome, ${currentUser}!`;
     usernamePrompt.classList.add("hidden");
-    bookApp.classList.remove("hidden");
-  } else {
-    alert("Please enter your name.");
+    appContainer.classList.remove("hidden");
+    loadBooks();
   }
+};
+
+// Start button click
+startBtn.addEventListener("click", () => {
+  const username = usernameInput.value.trim();
+
+  if (username === "") {
+    usernameError.classList.remove("hidden");
+    return;
+  }
+
+  usernameError.classList.add("hidden");
+  currentUser = username;
+
+  localStorage.setItem("bookworm-username", currentUser);
+  userNameTitle.textContent = `Welcome, ${currentUser}!`;
+  usernamePrompt.classList.add("hidden");
+  appContainer.classList.remove("hidden");
+  loadBooks();
 });
 
-let selectedRating = 0;
-
-// Show modal
+// Show modal to add book
 addBookBtn.addEventListener("click", () => {
   bookModal.classList.remove("hidden");
-  validateForm();
+  resetForm();
 });
 
-// Star click logic
-starRating.innerHTML = "★★★★★";
-const stars = [...starRating.textContent].map((_, i) => {
-  const span = document.createElement("span");
-  span.innerHTML = "★";
-  span.addEventListener("click", () => {
-    selectedRating = i + 1;
-    updateStars();
-    validateForm();
-  });
-  return span;
-});
-starRating.innerHTML = "";
-stars.forEach(star => starRating.appendChild(star));
+// Reset form
+resetBtn.addEventListener("click", resetForm);
 
-function updateStars() {
-  stars.forEach((star, i) => {
-    star.classList.toggle("selected", i < selectedRating);
-  });
+function resetForm() {
+  bookTitleInput.value = "";
+  bookReviewInput.value = "";
+  currentRating = 0;
+  updateStars();
+  submitBtn.disabled = true;
 }
 
-// Reset button
-resetBtn.addEventListener("click", () => {
-  bookTitle.value = "";
-  bookReview.value = "";
-  selectedRating = 0;
-  updateStars();
-  validateForm();
+// Enable submit button only if form is filled
+[bookTitleInput, bookReviewInput].forEach(input => {
+  input.addEventListener("input", checkFormValidity);
 });
 
-// Add button
-submitBtn.addEventListener("click", () => {
-  if (bookTitle.value && bookReview.value && selectedRating > 0) {
-    const entry = document.createElement("div");
-    entry.classList.add("review-entry");
-    entry.innerHTML = `
-      <strong>${bookTitle.value}</strong><br>
-      ${"★".repeat(selectedRating)}<br>
-      <em>${bookReview.value}</em>
-    `;
-    bookList.appendChild(entry);
-
-    // Clear form
-    bookTitle.value = "";
-    bookReview.value = "";
-    selectedRating = 0;
-    updateStars();
-    validateForm();
-    bookModal.classList.add("hidden");
-  }
-});
-
-// Disable Add button unless form is filled
-function validateForm() {
-  if (bookTitle.value && bookReview.value && selectedRating > 0) {
+function checkFormValidity() {
+  if (bookTitleInput.value.trim() && bookReviewInput.value.trim() && currentRating > 0) {
     submitBtn.disabled = false;
   } else {
     submitBtn.disabled = true;
   }
 }
 
-bookTitle.addEventListener("input", validateForm);
-bookReview.addEventListener("input", validateForm);
+// Handle star rating
+starRating.innerHTML = "★★★★★";
+const stars = starRating.querySelectorAll("span, div")[0].childNodes;
+
+starRating.addEventListener("click", (e) => {
+  if (e.target.nodeName === "TEXT") return;
+  const rect = starRating.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const starWidth = rect.width / 5;
+  currentRating = Math.ceil(x / starWidth);
+  updateStars();
+  checkFormValidity();
+});
+
+function updateStars() {
+  const stars = starRating.textContent.split("");
+  for (let i = 0; i < 5; i++) {
+    stars[i] = i < currentRating ? "★" : "☆";
+  }
+  starRating.textContent = stars.join("");
+}
+
+// Submit book review
+submitBtn.addEventListener("click", () => {
+  const title = bookTitleInput.value.trim();
+  const review = bookReviewInput.value.trim();
+
+  const book = {
+    title,
+    rating: currentRating,
+    review,
+  };
+
+  let userBooks = JSON.parse(localStorage.getItem(`bookworm-books-${currentUser}`)) || [];
+  userBooks.push(book);
+  localStorage.setItem(`bookworm-books-${currentUser}`, JSON.stringify(userBooks));
+
+  displayBooks(userBooks);
+  bookModal.classList.add("hidden");
+  resetForm();
+});
+
+// Load saved books for the current user
+function loadBooks() {
+  const books = JSON.parse(localStorage.getItem(`bookworm-books-${currentUser}`)) || [];
+  displayBooks(books);
+}
+
+// Display books on the page
+function displayBooks(books) {
+  bookList.innerHTML = "";
+  books.forEach(book => {
+    const div = document.createElement("div");
+    div.classList.add("book-entry");
+    div.innerHTML = `
+      <h4>${book.title}</h4>
+      <p>Rating: ${"★".repeat(book.rating)}${"☆".repeat(5 - book.rating)}</p>
+      <p>${book.review}</p>
+    `;
+    bookList.appendChild(div);
+  });
+}
+

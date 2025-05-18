@@ -171,3 +171,13 @@ input, textarea {
   font-family: 'Montserrat', sans-serif;
 }
 
+.error-msg {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 5px;
+}
+
+.hidden {
+  display: none;
+}
+
