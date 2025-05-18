@@ -119,3 +119,55 @@ body {
   font-size: 16px;
   cursor: pointer;
 }
+
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.welcome-title {
+  font-weight: 700; /* Bold */
+  font-size: 2rem;
+}
+
+.username-title {
+  font-weight: 900; /* Black */
+}
+
+.section-heading {
+  font-weight: 700;
+}
+
+.book-box {
+  background-color: #A47764;
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f7f7f7;
+}
+
+h1, h2, h3 {
+  font-weight: 700; /* Bold for titles */
+}
+
+#user-name {
+  font-weight: 900; /* Black font weight for username greeting */
+  text-align: center;
+}
+
+.center-btn {
+  display: block;
+  margin: 20px auto;
+}
+
+input, textarea {
+  font-family: 'Montserrat', sans-serif;
+}
+
