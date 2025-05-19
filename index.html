@@ -3,41 +3,51 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bookworm Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet" />
+  <title>Bookworm</title>
   <link rel="stylesheet" href="style.css" />
+  <!-- Gotham-like font: Using Montserrat -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <!-- Username prompt (shown initially) -->
-  <div id="username-prompt" class="username-prompt container">
-    <h1 class="welcome-title">Welcome to Bookworm Tracker</h1>
-    <input type="text" id="username-input" placeholder="Enter your username" />
-    <button id="start-btn">Start</button>
-    <p id="error-message" class="error-msg hidden"></p>
-  </div>
 
-  <!-- Main app container (hidden initially) -->
-  <div id="booktracker-app" class="container hidden">
-    <h1 id="user-name" class="username-title"></h1>
-    <h2 class="section-heading">Books I Finished Reading:</h2>
-    <div id="book-list" class="book-list"></div>
-    <button id="add-book-btn" class="center-btn">Add Book</button>
-  </div>
-
-  <!-- Modal to add book -->
-  <div id="book-modal" class="modal hidden">
-    <div class="modal-content">
-      <h3>Add a New Book</h3>
-      <input type="text" id="book-title" placeholder="Book title" />
-      <div id="star-rating" class="stars"></div>
-      <textarea id="book-review" rows="4" placeholder="Write your review..."></textarea>
-      <div class="modal-buttons">
-        <button id="reset-btn">Reset</button>
-        <button id="submit-btn" disabled>Submit</button>
-      </div>
+  <!-- Landing Page -->
+  <section id="username-screen" class="screen landing">
+    <div class="username-box">
+      <h1>Welcome to Bookworm</h1>
+      <input type="text" id="username" placeholder="Enter username" autocomplete="off" />
+      <button id="username-submit">Done</button>
+      <p id="username-error" class="error-message"></p>
     </div>
-  </div>
+  </section>
+
+  <!-- Main Page -->
+  <section id="main-screen" class="screen hidden">
+    <h2 id="welcome-message"></h2>
+    <div class="main-box">
+      <h3>Books I finished reading:</h3>
+      <button id="add-book-button">Add Book</button>
+      <div id="book-list"></div>
+    </div>
+  </section>
+
+  <!-- Add Book Form -->
+  <section id="book-form-screen" class="screen hidden">
+    <input type="text" id="book-title" placeholder="Book Title" autocomplete="off" />
+    <div id="star-rating" class="stars">
+      <span data-value="1">&#9733;</span>
+      <span data-value="2">&#9733;</span>
+      <span data-value="3">&#9733;</span>
+      <span data-value="4">&#9733;</span>
+      <span data-value="5">&#9733;</span>
+    </div>
+    <textarea id="book-review" placeholder="Write your review..."></textarea>
+    <div class="form-buttons">
+      <button id="reset-button">Reset</button>
+      <button id="add-review-button">Add</button>
+    </div>
+  </section>
 
   <script src="script.js"></script>
 </body>
 </html>
+
