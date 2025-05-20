@@ -5,49 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Bookworm</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- Gotham-like font: Using Montserrat -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
 </head>
-<body>
+<body>       
 
-  <!-- Landing Page -->
   <section id="username-screen" class="screen landing">
     <div class="username-box">
       <h1>Welcome to Bookworm</h1>
+      <p class="subtitle">Track the books you've read.</p>  <!-- Added subtitle here -->
       <input type="text" id="username" placeholder="Enter username" autocomplete="off" />
       <button id="username-submit">Done</button>
       <p id="username-error" class="error-message"></p>
     </div>
   </section>
 
-  <!-- Main Page -->
   <section id="main-screen" class="screen hidden">
-    <h2 id="welcome-message"></h2>
-    <div class="main-box">
-      <h3>Books I finished reading:</h3>
-      <button id="add-book-button">Add Book</button>
-      <div id="book-list"></div>
+    <div class="main-container">
+      <h2 id="welcome-message">Welcome, <span id="user-name-display"></span>!</h2>
+
+      <div class="main-box">
+        <h3>Books I finished reading:</h3>
+        <button id="add-book-button">Add Book</button>
+        <div id="book-list"></div>
+      </div>
     </div>
   </section>
 
-  <!-- Add Book Form -->
   <section id="book-form-screen" class="screen hidden">
-    <input type="text" id="book-title" placeholder="Book Title" autocomplete="off" />
-    <div id="star-rating" class="stars">
-      <span data-value="1">&#9733;</span>
-      <span data-value="2">&#9733;</span>
-      <span data-value="3">&#9733;</span>
-      <span data-value="4">&#9733;</span>
-      <span data-value="5">&#9733;</span>
-    </div>
-    <textarea id="book-review" placeholder="Write your review..."></textarea>
-    <div class="form-buttons">
-      <button id="reset-button">Reset</button>
-      <button id="add-review-button">Add</button>
+    <div class="form-box">
+      <input type="text" id="book-title" placeholder="Book Title" autocomplete="off" />
+      <div id="star-rating" class="stars">
+        <span data-value="1">&#9733;</span>
+        <span data-value="2">&#9733;</span>
+        <span data-value="3">&#9733;</span>
+        <span data-value="4">&#9733;</span>
+        <span data-value="5">&#9733;</span>
+      </div>
+      <textarea id="reviewText" placeholder="Write Your Review"></textarea>
+      <div class="form-buttons">
+        <button id="reset-button">Reset</button>
+        <button id="add-review-button">Add</button>
+        <button id="back-button" class="form-button">Back</button>
+      </div>
     </div>
   </section>
 
   <script src="script.js"></script>
 </body>
 </html>
-

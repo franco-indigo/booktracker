@@ -1,146 +1,115 @@
-// ==== DOM ELEMENTS ====
 const usernameScreen = document.getElementById('username-screen');
-const usernameInput = document.getElementById('username');
-const usernameSubmitBtn = document.getElementById('username-submit');
-const usernameError = document.getElementById('username-error');
-
 const mainScreen = document.getElementById('main-screen');
-const welcomeMessage = document.getElementById('welcome-message');
+const bookFormScreen = document.getElementById('book-form-screen');
+
+const usernameInput = document.getElementById('username');
+const usernameSubmit = document.getElementById('username-submit');
+const usernameError = document.getElementById('username-error');
+const userNameDisplay = document.getElementById('user-name-display');
+
 const addBookButton = document.getElementById('add-book-button');
+const addReviewButton = document.getElementById('add-review-button');
+const resetButton = document.getElementById('reset-button');
+const backButton = document.getElementById('back-button');
+
+const bookTitleInput = document.getElementById('book-title');
+const reviewTextInput = document.getElementById('reviewText');
+const starSpans = document.querySelectorAll('#star-rating span');
 const bookList = document.getElementById('book-list');
 
-const bookFormScreen = document.getElementById('book-form-screen');
-const bookTitleInput = document.getElementById('book-title');
-const starRatingDiv = document.getElementById('star-rating');
-const bookReviewInput = document.getElementById('book-review');
-const resetButton = document.getElementById('reset-button');
-const addReviewButton = document.getElementById('add-review-button');
+let selectedRating = 0;
+let currentUser = "";
 
-// ==== GLOBAL STATE ====
-let currentUser = '';
-let currentRating = 0;
+starSpans.forEach(star => {
+  star.addEventListener('click', () => {
+    selectedRating = parseInt(star.getAttribute('data-value'));
+    updateStars(selectedRating);
+  });
+});
 
-// ==== SCREEN HANDLING ====
-function showScreen(target) {
-  [usernameScreen, mainScreen, bookFormScreen].forEach(screen => screen.classList.add('hidden'));
-  target.classList.remove('hidden');
-}
-
-// ==== ERROR MESSAGES ====
-function showError(message) {
-  usernameError.textContent = message;
-}
-
-function clearError() {
-  usernameError.textContent = '';
-}
-
-// ==== LOCAL STORAGE ====
-function getUserReviews() {
-  return JSON.parse(localStorage.getItem(currentUser)) || [];
-}
-
-function saveReview(review) {
-  const reviews = getUserReviews();
-  reviews.push(review);
-  localStorage.setItem(currentUser, JSON.stringify(reviews));
-}
-
-// ==== RENDERING ====
-function loadReviews() {
-  bookList.innerHTML = '';
-  const reviews = getUserReviews();
-  reviews.forEach(addReviewToDOM);
-}
-
-function addReviewToDOM(review) {
-  const reviewEl = document.createElement('div');
-  reviewEl.classList.add('review-entry');
-
-  const stars = '★'.repeat(review.rating);
-  reviewEl.innerHTML = `
-    <h4>${review.title} ┃ <span class="stars">${stars}</span></h4>
-    <p>${review.review}</p>
-  `;
-
-  bookList.appendChild(reviewEl);
-}
-
-// ==== STAR RATING ====
 function updateStars(rating) {
-  document.querySelectorAll('#star-rating span').forEach(star => {
-    const value = parseInt(star.dataset.value);
+  starSpans.forEach(star => {
+    const value = parseInt(star.getAttribute('data-value'));
     star.classList.toggle('selected', value <= rating);
   });
 }
 
-function setupStarListeners() {
-  document.querySelectorAll('#star-rating span').forEach(star => {
-    star.addEventListener('click', () => {
-      currentRating = parseInt(star.dataset.value);
-      updateStars(currentRating);
-    });
-  });
-}
-
-// ==== FORM HANDLING ====
-function resetForm() {
-  bookTitleInput.value = '';
-  bookReviewInput.value = '';
-  currentRating = 0;
-  updateStars(0);
-}
-
-// ==== EVENT LISTENERS ====
-
-// Handle username submit
-usernameSubmitBtn.addEventListener('click', () => {
+usernameSubmit.addEventListener('click', () => {
   const username = usernameInput.value.trim();
-  if (!username) {
-    showError('You need to input a username');
-    return;
+  if (username === "") {
+    usernameError.textContent = "You need to input a username";
+  } else {
+    currentUser = username;
+    usernameScreen.classList.add('hidden');
+    mainScreen.classList.remove('hidden');
+    userNameDisplay.textContent = username;
+    loadReviews();
   }
-
-  clearError();
-  currentUser = username.toLowerCase();
-  welcomeMessage.textContent = `Welcome, ${username}`;
-  loadReviews();
-  showScreen(mainScreen);
 });
 
-// Show add book form
 addBookButton.addEventListener('click', () => {
-  resetForm();
-  showScreen(bookFormScreen);
+  bookFormScreen.classList.remove('hidden');
+  mainScreen.classList.add('hidden');
 });
 
-// Reset form
-resetButton.addEventListener('click', resetForm);
+backButton.addEventListener('click', () => {
+  bookFormScreen.classList.add('hidden');
+  mainScreen.classList.remove('hidden');
+});
 
-// Add review
+resetButton.addEventListener('click', () => {
+  bookTitleInput.value = "";
+  reviewTextInput.value = "";
+  selectedRating = 0;
+  updateStars(0);
+});
+
 addReviewButton.addEventListener('click', () => {
   const title = bookTitleInput.value.trim();
-  const review = bookReviewInput.value.trim();
+  const review = reviewTextInput.value.trim();
 
-  if (!title) {
-    alert('Please enter a book title.');
-    return;
-  }
-  if (currentRating === 0) {
-    alert('Please select a star rating.');
-    return;
-  }
-  if (!review) {
-    alert('Please write a review.');
+  if (!title || !review || selectedRating === 0) {
+    alert("The user has incomplete information for a book review.");
     return;
   }
 
-  const newReview = { title, rating: currentRating, review };
-  saveReview(newReview);
-  addReviewToDOM(newReview);
-  showScreen(mainScreen);
+  const reviewData = {
+    title: title,
+    review: review,
+    rating: selectedRating
+  };
+
+  let userReviews = JSON.parse(localStorage.getItem(currentUser)) || [];
+  userReviews.push(reviewData);
+  localStorage.setItem(currentUser, JSON.stringify(userReviews));
+
+  bookTitleInput.value = "";
+  reviewTextInput.value = "";
+  selectedRating = 0;
+  updateStars(0);
+
+  loadReviews();
+
+  bookFormScreen.classList.add('hidden');
+  mainScreen.classList.remove('hidden');
 });
 
-// ==== INIT ====
-setupStarListeners();
+function loadReviews() {
+  bookList.innerHTML = "";
+  const userReviews = JSON.parse(localStorage.getItem(currentUser)) || [];
 
+  userReviews.forEach(({ title, review, rating }) => {
+    const entry = document.createElement('div');
+    entry.classList.add('review-entry');
+
+    const starHTML = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+
+    entry.innerHTML = `
+      <h4>${title}</h4>
+      <p><strong>Rating:</strong> ${starHTML}</p>
+      <p>${review}</p>
+    `;
+
+    bookList.appendChild(entry);
+  });
+}
